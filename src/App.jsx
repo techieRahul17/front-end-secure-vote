@@ -10,6 +10,7 @@ import {Features} from "./pages/Features";
 import VoterList from "./pages/VoterList";
 import VotingPanel from "./pages/VotingPanel";
 import {VotingSteps} from "./pages/VotingSteps";
+import VotingInstructionss from "./pages/VotingInstructionss.jsx";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/voter-list" element={<VoterList />} />
                 <Route path="/voting-panel" element={<VotingPanel />} />
                 <Route path="/voting-steps" element={<VotingSteps />} />
+                <Route path="/voting-instructionss" element={<VotingInstructionss/>}/>
             </Routes>
         </Router>
     );

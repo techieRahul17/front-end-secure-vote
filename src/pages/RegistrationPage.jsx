@@ -1,41 +1,58 @@
-import * as React from "react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { Eye, EyeOff } from 'lucide-react';
+import { motion } from "framer-motion";
 
-const RegistrationPage = () => {
+export default function RegistrationPage() {
     const [formData, setFormData] = useState({
-        name: "",
-        secretCode: "",
         email: "",
+        username: "",
         password: "",
         reEnterPassword: ""
     });
 
     const [showPasswordFields, setShowPasswordFields] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const navigate = useNavigate(); // Initialize navigate
+    const [showPassword, setShowPassword] = useState(false);
+    const [showReEnterPassword, setShowReEnterPassword] = useState(false);
+    const navigate = useNavigate();
 
-    const validateInitialFields = () => {
-        // Example validation for initial fields
-        if (formData.name && formData.secretCode === "1234" && formData.email.includes("@")) {
-            setShowPasswordFields(true);
-            setErrorMessage("");
+    const validateEmail = async () => {
+        if (formData.email.includes("@")) {
+            try {
+                const response = await axios.get(`http://localhost:1111/api/setEmail?mail=${formData.email}`);
+                if (response.data.status === "S") {
+                    setShowPasswordFields(true);
+                    setErrorMessage("");
+                } else {
+                    setErrorMessage(response.data.message || "Failed to verify email. Please try again.");
+                }
+            } catch (error) {
+                setErrorMessage("Failed to verify email. Please try again.");
+            }
         } else {
-            setErrorMessage("Please enter the correct Name, Secret Code, and Email.");
+            setErrorMessage("Please enter a valid email address.");
         }
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-
-        // Check if passwords match
         if (formData.password !== formData.reEnterPassword) {
             setErrorMessage("Passwords do not match.");
             return;
         }
-
-        // On successful registration, navigate to the login page
-        navigate("/login"); // Redirects to login page after submission
+        try {
+            const response = await axios.get(`http://localhost:1111/api/registerUser?username=${formData.username}&password=${formData.password}`);
+            if (response.data.status === "S") {
+                alert(`Registration successful. Your Hash ID is: ${response.data.hashID}. Please store it for future use.`);
+                navigate("/login");
+            } else {
+                setErrorMessage(response.data.message || "Registration failed. Please try again.");
+            }
+        } catch (error) {
+            setErrorMessage("An error occurred during registration. Please try again.");
+        }
     };
 
     const handleInputChange = (e) => {
@@ -46,132 +63,186 @@ const RegistrationPage = () => {
         }));
     };
 
+    const togglePasswordVisibility = (field) => {
+        if (field === 'password') {
+            setShowPassword(!showPassword);
+        } else {
+            setShowReEnterPassword(!showReEnterPassword);
+        }
+    };
+
+    const inputVariants = {
+        focus: { scale: 1.02, transition: { duration: 0.3 } }
+    };
+
     return (
-        <div
-            className="flex overflow-hidden flex-col justify-center items-start px-20 py-28 min-h-screen bg-gradient-to-b from-[#FF4E6E] via-[#DA5F9C] to-[#2E33D1] max-md:px-5 max-md:py-24"
-        >
-            <div className="flex flex-col w-full max-w-[1103px] mx-auto max-md:max-w-full">
-                <div className="flex gap-5 max-md:flex-col">
-                    <div className="flex flex-col w-[43%] max-md:ml-0 max-md:w-full">
-                        <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/67446702eabcd31d9bbf137ef3170bebac9ba0f224c2ee2157d3a073fec81b9f?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d"
-                            alt="Student registration illustration"
-                            className="object-contain grow mt-24 w-full aspect-[0.59] max-md:mt-10"
-                        />
-                    </div>
-                    <div className="flex flex-col ml-5 w-[57%] max-md:ml-0 max-md:w-full">
-                        <form
-                            onSubmit={handleSubmit}
-                            className="flex flex-col text-white max-md:mt-10 max-md:max-w-full"
-                            noValidate
+        <main className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-b from-purple-900 via-purple-700 to-pink-700 overflow-hidden p-4 md:p-8">
+            <motion.div
+                className="w-full max-w-7xl flex flex-col md:flex-row items-center justify-between bg-black/30 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <motion.div
+                    className="w-full md:w-1/2 flex justify-center mb-12 md:mb-0"
+                    initial={{ x: -100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, type: "spring" }}
+                >
+                    <motion.img
+                        src="https://cdn.builder.io/api/v1/image/assets/TEMP/67446702eabcd31d9bbf137ef3170bebac9ba0f224c2ee2157d3a073fec81b9f"
+                        alt="Student registration illustration"
+                        className="max-w-full h-auto object-contain rounded-2xl shadow-xl"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.3 }}
+                    />
+                </motion.div>
+
+                <div className="w-full md:w-1/2 flex justify-center">
+                    <form onSubmit={handleSubmit} className="w-full max-w-xl space-y-8">
+                        <motion.h1
+                            className="text-4xl font-bold mb-8 bg-gradient-to-r from-pink-500 to-purple-600 text-transparent bg-clip-text"
+                            initial={{y: -20, opacity: 0}}
+                            animate={{y: 0, opacity: 1}}
+                            transition={{duration: 0.5, delay: 0.2}}
                         >
-                            <h1 className="text-5xl font-bold max-md:max-w-full max-md:text-4xl">
-                                Student Registration Form
-                            </h1>
-                            <div className="flex flex-col items-start mt-28 ml-12 max-w-full text-xl w-[361px] max-md:mt-10 max-md:ml-2.5">
-                                <div className="w-full mb-6">
-                                    <label htmlFor="name" className="block mb-2">Name</label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        name="name"
-                                        value={formData.name}
-                                        onChange={handleInputChange}
-                                        className="flex w-full px-4 py-2 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                        required
-                                        aria-required="true"
-                                    />
-                                </div>
+                            Student Registration
+                        </motion.h1>
 
-                                <div className="w-full mb-6">
-                                    <label htmlFor="secretCode" className="block mb-2">Secret Code</label>
-                                    <input
-                                        type="text"
-                                        id="secretCode"
-                                        name="secretCode"
-                                        value={formData.secretCode}
-                                        onChange={handleInputChange}
-                                        className="flex w-full px-4 py-2 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                        required
-                                        aria-required="true"
-                                    />
-                                </div>
+                        <motion.div
+                            className="space-y-8"
+                            initial={{opacity: 0}}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                        >
+                            <motion.div className="w-full" variants={inputVariants}>
+                                <label className="block text-white text-lg font-medium mb-3" htmlFor="email">Email</label>
+                                <motion.input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    className="w-full px-5 py-4 rounded-xl focus:ring-4 focus:ring-blue-500 focus:outline-none bg-white/20 text-white text-lg placeholder-gray-300"
+                                    required
+                                    placeholder="your.email@example.com"
+                                    whileFocus="focus"
+                                />
+                            </motion.div>
 
-                                <div className="w-full mb-6">
-                                    <label htmlFor="email" className="block mb-2">Email</label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                        className="flex w-full px-4 py-2 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                        required
-                                        aria-required="true"
-                                    />
-                                </div>
-
-                                {/* Error message display */}
-                                {errorMessage && (
-                                    <p className="text-red-500 mt-2">{errorMessage}</p>
-                                )}
-
-                                <button
-                                    type="button"
-                                    onClick={validateInitialFields}
-                                    className="mt-6 px-6 py-2 text-lg font-semibold text-white bg-blue-700 rounded-md hover:bg-blue-800 focus:ring-2 focus:ring-blue-300 focus:outline-none transition-colors duration-200"
+                            {errorMessage && (
+                                <motion.p
+                                    className="text-red-300 mt-4 text-lg font-medium"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.3 }}
                                 >
-                                    Verify Details
-                                </button>
+                                    {errorMessage}
+                                </motion.p>
+                            )}
 
-                                {/* Password fields (initially hidden) */}
-                                {showPasswordFields && (
-                                    <div className="w-full mt-8 mb-6">
-                                        <h2 className="text-2xl font-bold mb-6">Create Your Password</h2>
-                                        <div className="mb-6">
-                                            <label htmlFor="password" className="block mb-2">Password</label>
-                                            <input
-                                                type="password"
+                            {!showPasswordFields && (
+                                <motion.button
+                                    type="button"
+                                    onClick={validateEmail}
+                                    className="w-full px-6 py-3 mt-6 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-lg hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Verify Email
+                                </motion.button>
+                            )}
+
+                            {showPasswordFields && (
+                                <motion.div
+                                    className="space-y-8"
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.5}}
+                                >
+                                    <h2 className="text-3xl font-bold text-white mt-12 mb-8 text-center">Create Your
+                                        Password</h2>
+                                    <motion.div variants={inputVariants}>
+                                        <label className="block text-white text-lg font-medium mb-3"
+                                               htmlFor="username">Username</label>
+                                        <div className="relative">
+                                            <motion.input
+                                                type="text"
+                                                id="username"
+                                                name="username"
+                                                value={formData.username}
+                                                onChange={handleInputChange}
+                                                className="w-full px-5 py-4 rounded-xl focus:ring-4 focus:ring-blue-500 focus:outline-none bg-white/20 text-white text-lg placeholder-gray-300"
+                                                required
+                                                placeholder="Enter the username"
+                                                whileFocus="focus"
+                                            />
+                                        </div>
+                                    </motion.div>
+                                    <motion.div variants={inputVariants}>
+                                        <label className="block text-white text-lg font-medium mb-3"
+                                               htmlFor="password">Password</label>
+                                        <div className="relative">
+                                            <motion.input
+                                                type={showPassword ? "text" : "password"}
                                                 id="password"
                                                 name="password"
                                                 value={formData.password}
                                                 onChange={handleInputChange}
-                                                className="flex w-full px-4 py-2 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                className="w-full px-5 py-4 rounded-xl focus:ring-4 focus:ring-blue-500 focus:outline-none bg-white/20 text-white text-lg placeholder-gray-300"
                                                 required
-                                                aria-required="true"
+                                                placeholder="Enter your password"
+                                                whileFocus="focus"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => togglePasswordVisibility('password')}
+                                                className="absolute inset-y-0 right-0 pr-5 flex items-center text-white"
+                                            >
+                                                {showPassword ? <EyeOff className="h-6 w-6"/> :
+                                                    <Eye className="h-6 w-6"/>}
+                                            </button>
                                         </div>
-                                        <div className="mb-6">
-                                            <label htmlFor="reEnterPassword" className="block mb-2">Re-enter Password</label>
-                                            <input
-                                                type="password"
+                                    </motion.div>
+                                    <motion.div variants={inputVariants}>
+                                        <label className="block text-white text-lg font-medium mb-3"
+                                               htmlFor="reEnterPassword">Re-enter Password</label>
+                                        <div className="relative">
+                                            <motion.input
+                                                type={showReEnterPassword ? "text" : "password"}
                                                 id="reEnterPassword"
                                                 name="reEnterPassword"
                                                 value={formData.reEnterPassword}
                                                 onChange={handleInputChange}
-                                                className="flex w-full px-4 py-2 bg-white text-gray-900 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                                className="w-full px-5 py-4 rounded-xl focus:ring-4 focus:ring-blue-500 focus:outline-none bg-white/20 text-white text-lg placeholder-gray-300"
                                                 required
-                                                aria-required="true"
+                                                placeholder="Re-enter your password"
+                                                whileFocus="focus"
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={() => togglePasswordVisibility('reEnterPassword')}
+                                                className="absolute inset-y-0 right-0 pr-5 flex items-center text-white"
+                                            >
+                                                {showReEnterPassword ? <EyeOff className="h-6 w-6"/> :
+                                                    <Eye className="h-6 w-6"/>}
+                                            </button>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="self-end px-14 py-2 mr-52 text-xl font-bold text-white bg-blue-700 rounded-md w-[180px] hover:bg-blue-800 focus:ring-2 focus:ring-blue-300 focus:outline-none transition-colors duration-200 max-md:px-5 max-md:mr-2.5"
-                                aria-label="Submit registration form"
-                            >
-                                SUBMIT
-                            </button>
-                        </form>
-                    </div>
+                                    </motion.div>
+                                    <motion.button
+                                        type="submit"
+                                        className="w-full px-8 py-4 mt-8 text-xl font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none transition-all duration-300 transform hover:scale-105"
+                                        whileHover={{scale: 1.05}}
+                                        whileTap={{scale: 0.95}}
+                                    >
+                                        SUBMIT
+                                    </motion.button>
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    </form>
                 </div>
-            </div>
-        </div>
+            </motion.div>
+        </main>
     );
-};
-
-export default RegistrationPage;
+}

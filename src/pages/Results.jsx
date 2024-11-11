@@ -1,47 +1,49 @@
-import React from 'react';
+import React from "react";
 
-interface Candidate {
-    name: string;
-    votes: number;
-}
-
-const candidates: Candidate[] = [
+const candidates = [
     { name: "Ramcharan", votes: 5 },
     { name: "Rahul", votes: 4 },
-    { name: "Pragatheesh", votes: 3 },
-    { name: "Saipranav", votes: 2 }
+    { name: "Rahul Gandhi", votes: 3 },
+    { name: "Batman", votes: 2 },
 ];
 
-export function ElectionResults() {
+function CandidateRow({ name, votes }) {
     return (
-        <main className="flex overflow-hidden flex-col items-center px-20 pt-28 pb-12 text-2xl text-black max-md:px-5 max-md:pt-24">
-            <header>
-                <h1 className="text-6xl text-white max-md:max-w-full max-md:text-4xl">
+        <section className="flex justify-between px-4 py-3 mt-2 w-full rounded-md bg-white/20 backdrop-blur-sm">
+            <div className="text-white">{name}</div>
+            <div className="text-white">{votes}</div>
+        </section>
+    );
+}
+
+function ElectionResults() {
+    return (
+        <main className="min-h-screen w-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#FF4E6E] via-[#DA5F9C] to-[#2E33D1] overflow-hidden px-4 py-8">
+            <div className="w-full max-w-4xl bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-2xl">
+                <h1 className="text-5xl font-bold text-white mb-4 text-center">
                     ELECTION NAME
                 </h1>
-            </header>
-
-            <section className="w-full max-w-[1067px]">
-                <h2 className="self-start mt-4 ml-20 text-3xl text-white max-md:ml-2.5">Results</h2>
-
-                <div className="flex flex-wrap gap-5 justify-between px-7 py-4 mt-14 ml-8 w-full whitespace-nowrap rounded-md bg-stone-300 shadow-[0px_4px_4px_rgba(0,0,0,0.25)] max-md:px-5 max-md:mt-10 max-md:max-w-full">
-                    <div>Candidate</div>
-                    <div>Votes</div>
-                </div>
-
+                <h2 className="text-3xl text-white mb-8">
+                    Results
+                </h2>
+                <section className="flex justify-between px-4 py-3 mb-4 w-full rounded-md bg-white/30 backdrop-blur-sm font-semibold">
+                    <div className="text-white">Candidate</div>
+                    <div className="text-white">Votes</div>
+                </section>
                 {candidates.map((candidate, index) => (
-                    <div key={index} className="flex flex-wrap gap-5 justify-between px-4 py-3.5 mt-9 ml-8 w-full whitespace-nowrap rounded-md bg-stone-300 max-md:max-w-full">
-                        <div>{candidate.name}</div>
-                        <div>{candidate.votes}</div>
-                    </div>
+                    <CandidateRow key={index} name={candidate.name} votes={candidate.votes} />
                 ))}
-            </section>
-
-            <footer className="self-end mt-32 text-white max-md:mt-10">
-                <a href="/" className="focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
-                    BACK TO HOME
-                </a>
-            </footer>
+                <div className="flex justify-center mt-8">
+                    <a
+                        href="/"
+                        className="px-6 py-3 text-lg font-semibold text-blue-900 bg-white rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 transition-all"
+                    >
+                        BACK TO HOME
+                    </a>
+                </div>
+            </div>
         </main>
     );
 }
+
+export default ElectionResults;

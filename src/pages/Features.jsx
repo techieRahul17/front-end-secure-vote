@@ -1,67 +1,117 @@
-import * as React from "react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Shield, Database, Hash, Zap, Lock, Clock, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const features = [
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/3ad8fcfd3d291103a73d46f5dc11f5f9201aa8d9c0578ebf2b98e434bdd3a006?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
+        icon: Shield,
         title: "Secured by RSA/HMAC encryption",
+        description: "Military-grade encryption ensuring vote integrity"
     },
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/6e409cdcf65a09d17565b8e94fba9be471a043d7fabf5f64ed19a738f4df8a0f?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
-        title: "Backed by Blockchain based storage of Votes",
+        icon: Database,
+        title: "Blockchain-based Vote Storage",
+        description: "Immutable and transparent vote recording"
     },
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/2e485e469f331ef3f41d920c0a5f215ff3dde6ec675693f60d6209c071cda747?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
-        title: "Verifiable votes using Hash-Ids",
+        icon: Hash,
+        title: "Verifiable votes using Hash-IDs",
+        description: "Each vote is uniquely traceable and verifiable"
     },
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/d3f61a8dcdb32a6ed96574056e9f9107d0b6dad6c7f55e8a58a4c23a2a24bff2?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
-        title: "Easy to use",
+        icon: Zap,
+        title: "Easy to use interface",
+        description: "Intuitive design for seamless voting experience"
     },
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/3f24d702a06f5aeaa620a9ed0682f4a6b50d77c68a69e6c5500713c3489cac10?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
-        title: "Multiple levels of authentication for votes",
+        icon: Lock,
+        title: "Multiple authentication levels",
+        description: "Multi-factor authentication for enhanced security"
     },
     {
-        icon: "https://cdn.builder.io/api/v1/image/assets/TEMP/8d58901cf1cf700717e8dbf8466818f783d5e25f9dec5e0be5d31061822f4ac3?placeholderIfAbsent=true&apiKey=856530a2bc8b4fad805f6d030062538d",
+        icon: Clock,
         title: "Faster voting process",
-    },
+        description: "Efficient and quick voting system"
+    }
 ];
+
+function FeatureCard({ Icon, title, description, index }) {
+    return (
+        <motion.div
+            className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/20 transition-all duration-300 flex items-start gap-4 group"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            whileHover={{ scale: 1.05 }}
+        >
+            <div className="bg-gradient-to-br from-pink-500 to-purple-600 p-3 rounded-full">
+                <Icon className="w-8 h-8 text-white" />
+            </div>
+            <div>
+                <h3 className="text-xl font-medium text-white mb-2 group-hover:text-pink-300 transition-colors duration-300">{title}</h3>
+                <p className="text-blue-200 group-hover:text-white transition-colors duration-300">{description}</p>
+            </div>
+        </motion.div>
+    );
+}
 
 export function Features() {
     return (
-        <main
-            data-layername="features"
-            className="flex overflow-hidden flex-wrap gap-10 items-start pt-40 pr-6 pb-7 pl-20 bg-white max-md:px-5 max-md:pt-24"
-        >
-            <section className="flex flex-col grow shrink-0 items-start self-start basis-0 w-fit max-md:max-w-full">
-                {features.map((feature, index) => (
-                    <article
-                        key={index}
-                        className="flex flex-wrap gap-10 max-w-full text-2xl text-slate-950"
+        <main className="min-h-screen w-full bg-gradient-to-b from-purple-950 via-purple-800 to-pink-700 px-4 py-16 overflow-hidden">
+            <motion.div
+                className="w-full max-w-[1700px] mx-auto px-4 lg:px-8 py-8 lg:py-16"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <header className="text-center mb-16">
+                    <motion.h1
+                        className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-pink-300 text-transparent bg-clip-text"
+                        initial={{ y: -20 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                        <img
-                            loading="lazy"
-                            src={feature.icon}
-                            alt=""
-                            className="object-contain shrink-0 aspect-[0.99] w-[73px]"
+                        Our Features
+                    </motion.h1>
+                    <motion.p
+                        className="text-xl text-blue-200"
+                        initial={{ y: 20 }}
+                        animate={{ y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                        Advanced technology ensuring secure and efficient voting
+                    </motion.p>
+                </header>
+
+                <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {features.map((feature, index) => (
+                        <FeatureCard
+                            key={index}
+                            Icon={feature.icon}
+                            title={feature.title}
+                            description={feature.description}
+                            index={index}
                         />
-                        <h3 className="flex-auto self-start mt-2.5 w-[477px] max-md:max-w-full">
-                            {feature.title}
-                        </h3>
-                    </article>
-                ))}
-                <nav className="self-end mt-32 text-2xl text-black max-md:mt-10">
-                    <button
-                        data-layername="backToHome"
-                        className="px-6 py-3 text-lg font-semibold text-blue-900 bg-white rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 transition-all"
-                        aria-label="Return to home page"
+                    ))}
+                </section>
+
+                <footer className="mt-16 text-center">
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.5 }}
                     >
-                        <a href="/">
+                        <Link
+                            to="/"
+                            className="inline-flex items-center px-8 py-3 text-lg font-semibold text-white bg-gradient-to-r from-pink-500 to-purple-600 rounded-full hover:from-pink-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                        >
+                            <ArrowLeft className="mr-2 h-5 w-5" />
                             BACK TO HOME
-                        </a>
-                    </button>
-                </nav>
-            </section>
+                        </Link>
+                    </motion.div>
+                </footer>
+            </motion.div>
         </main>
     );
 }
